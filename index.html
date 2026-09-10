@@ -1,0 +1,405 @@
+<title>Richard Bretton</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+  /* ---- Committed single-theme dark: a night campaign map. All colors painted explicitly. ---- */
+  :root{
+    --bg:#0A0D18; --bg-2:#0C1020;
+    --panel:#12172A; --panel-2:#171D33;
+    --line:#262E48; --line-strong:#39426B;
+    --ink:#ECE7D9; --ink-dim:#9AA2BC; --ink-faint:#656C88;
+    --gold:#F2A93B; --gold-soft:#F6C877; --gold-glow:rgba(242,169,59,.30);
+    --mint:#57D9A8; --slate:#6B7290; --cyan:#63D6C6;
+    --maxw:1080px;
+    --step:clamp(2.6rem,6vw,5rem);
+    font-synthesis-weight:none;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"Hanken Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.6; -webkit-font-smoothing:antialiased;
+    /* night sky + faint contour cartography, subtle */
+    background-image:
+      radial-gradient(1100px 720px at 78% -8%, rgba(242,169,59,.09), transparent 60%),
+      radial-gradient(900px 600px at 8% 12%, rgba(99,214,198,.05), transparent 55%),
+      radial-gradient(1200px 900px at 50% 120%, rgba(57,66,107,.18), transparent 60%);
+    background-attachment:fixed;
+  }
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 clamp(18px,4vw,40px)}
+  a{color:inherit}
+  .mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px; padding:22px 0 8px;
+  }
+  .mark{
+    font-family:"JetBrains Mono",monospace; font-weight:700; letter-spacing:.28em;
+    font-size:.78rem; color:var(--ink-dim);
+  }
+  .mark b{color:var(--gold)}
+  .toplinks{display:flex; gap:8px; flex-wrap:wrap}
+  .toplink{
+    font-family:"JetBrains Mono",monospace; font-size:.72rem; letter-spacing:.12em;
+    text-transform:uppercase; text-decoration:none; color:var(--ink-dim);
+    border:1px solid var(--line); border-radius:999px; padding:7px 13px;
+    transition:border-color .2s, color .2s, background .2s;
+  }
+  .toplink:hover,.toplink:focus-visible{color:var(--ink); border-color:var(--line-strong); background:var(--panel)}
+
+  /* ---------- hero / player card ---------- */
+  .hero{position:relative; overflow:hidden; padding:clamp(38px,7vw,84px) 0 clamp(30px,5vw,54px)}
+  .hero-inner{position:relative; z-index:1}
+  .fracture{position:absolute; top:-6%; right:-3%; width:min(720px,80%); height:112%;
+    z-index:0; pointer-events:none; opacity:.5; filter:drop-shadow(0 0 5px var(--gold-glow))}
+  .fracture path{fill:none; stroke:url(#kintsugi); stroke-width:1.4; stroke-linecap:round; stroke-linejoin:round}
+  .fracture circle{fill:var(--gold-soft)}
+  @media (max-width:760px){ .fracture{opacity:.28; width:88%} }
+  .eyebrow{
+    font-family:"JetBrains Mono",monospace; font-size:.72rem; letter-spacing:.34em;
+    text-transform:uppercase; color:var(--gold); margin:0 0 22px;
+    display:flex; align-items:center; gap:12px;
+  }
+  .eyebrow::before{content:""; width:26px; height:1px; background:var(--gold); opacity:.7}
+  .hero h1{
+    font-family:"Bricolage Grotesque","Hanken Grotesk",sans-serif;
+    font-weight:800; letter-spacing:-.02em; text-wrap:balance;
+    font-size:clamp(2.9rem,9vw,6.4rem); line-height:.94; margin:0;
+  }
+  .hero h1 span{
+    display:block; background:linear-gradient(180deg,var(--ink) 0%, #C9C3B3 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .class-line{
+    font-family:"JetBrains Mono",monospace; font-size:clamp(.74rem,1.6vw,.9rem);
+    letter-spacing:.2em; text-transform:uppercase; color:var(--ink-dim);
+    margin:24px 0 0; padding-left:2px;
+  }
+  .thesis{
+    font-size:clamp(1.08rem,2.4vw,1.42rem); line-height:1.5; max-width:34ch;
+    margin:26px 0 0; color:var(--ink);
+  }
+  .thesis em{color:var(--gold-soft); font-style:normal}
+  .howto{
+    font-family:"JetBrains Mono",monospace; font-size:.76rem; letter-spacing:.04em;
+    color:var(--ink-faint); margin:30px 0 0; display:flex; align-items:center; gap:10px;
+  }
+  .howto::before{content:"▸"; color:var(--gold)}
+
+  /* ---------- section label ---------- */
+  .sec-label{
+    font-family:"JetBrains Mono",monospace; font-size:.72rem; letter-spacing:.28em;
+    text-transform:uppercase; color:var(--ink-faint);
+    display:flex; align-items:center; gap:14px; margin:0 0 6px;
+  }
+  .sec-label::after{content:""; flex:1; height:1px;
+    background:linear-gradient(90deg,var(--line),transparent)}
+
+  /* ---------- the campaign map ---------- */
+  .map{position:relative; margin:clamp(30px,5vw,46px) 0 0; padding:8px 0 4px}
+  .map::before{ /* the rail */
+    content:""; position:absolute; top:14px; bottom:96px; left:50%; width:2px;
+    transform:translateX(-1px);
+    background:linear-gradient(180deg,var(--gold) 0%, #B9813A 42%, var(--line-strong) 78%, var(--line) 100%);
+    box-shadow:0 0 18px var(--gold-glow);
+  }
+  .level{
+    position:relative; display:grid; grid-template-columns:1fr 66px 1fr;
+    align-items:center; margin:0 0 clamp(30px,4.5vw,52px);
+  }
+  .node{grid-column:2; display:flex; justify-content:center}
+  .dot{
+    width:20px; height:20px; border-radius:50%; position:relative; z-index:2;
+    background:var(--bg-2); border:2px solid var(--slate);
+  }
+  .dot.live{background:radial-gradient(circle at 50% 42%,var(--mint),#2f8f6a);
+    border-color:var(--mint); box-shadow:0 0 0 5px rgba(87,217,168,.12), 0 0 22px rgba(87,217,168,.5)}
+  .dot.wip{background:radial-gradient(circle at 50% 42%,var(--gold-soft),#B9813A);
+    border-color:var(--gold); box-shadow:0 0 0 5px var(--gold-glow), 0 0 22px var(--gold-glow)}
+  .dot.locked{background:var(--bg-2); border:2px dashed var(--slate); opacity:.85}
+
+  .card{
+    grid-row:1; max-width:452px; background:var(--panel);
+    border:1px solid var(--line); border-radius:14px;
+    padding:22px 24px 20px; position:relative;
+    transition:border-color .22s, transform .22s, box-shadow .22s;
+  }
+  .level:nth-child(odd) .card{grid-column:1; justify-self:end}
+  .level:nth-child(even) .card{grid-column:3; justify-self:start}
+  /* connector nub from card toward rail */
+  .card::after{content:""; position:absolute; top:32px; width:26px; height:1px; background:var(--line-strong)}
+  .level:nth-child(odd) .card::after{right:-26px}
+  .level:nth-child(even) .card::after{left:-26px}
+
+  .card-head{display:flex; align-items:center; justify-content:space-between; gap:12px; margin:0 0 12px}
+  .lvl{font-family:"JetBrains Mono",monospace; font-size:.72rem; letter-spacing:.2em;
+    color:var(--ink-faint); text-transform:uppercase}
+  .status{
+    font-family:"JetBrains Mono",monospace; font-size:.64rem; letter-spacing:.16em;
+    text-transform:uppercase; padding:4px 9px; border-radius:999px;
+    display:inline-flex; align-items:center; gap:7px; white-space:nowrap;
+  }
+  .status::before{content:""; width:6px; height:6px; border-radius:50%; background:currentColor}
+  .status.live{color:var(--mint); background:rgba(87,217,168,.10); border:1px solid rgba(87,217,168,.28)}
+  .status.wip{color:var(--gold); background:var(--gold-glow); border:1px solid rgba(242,169,59,.30)}
+  .status.locked{color:var(--slate); background:rgba(107,114,144,.10); border:1px solid rgba(107,114,144,.28)}
+
+  .world{font-family:"JetBrains Mono",monospace; font-size:.68rem; letter-spacing:.18em;
+    text-transform:uppercase; color:var(--cyan); margin:0 0 6px}
+  .card h3{
+    font-family:"Bricolage Grotesque",sans-serif; font-weight:700; letter-spacing:-.015em;
+    font-size:clamp(1.32rem,3vw,1.72rem); line-height:1.05; margin:0 0 10px; text-wrap:balance;
+  }
+  .card p{margin:0; color:var(--ink-dim); font-size:.95rem; line-height:1.58}
+  .card p b{color:var(--ink); font-weight:600}
+  .enter{
+    display:inline-flex; align-items:center; gap:9px; margin-top:16px;
+    font-family:"JetBrains Mono",monospace; font-size:.76rem; letter-spacing:.1em;
+    text-transform:uppercase; text-decoration:none; color:var(--gold);
+    font-weight:500;
+  }
+  .enter .arw{transition:transform .22s}
+  .enter.disabled{color:var(--ink-faint); pointer-events:none}
+  .card.is-live:hover,.card.is-live:focus-within{
+    border-color:var(--line-strong); transform:translateY(-3px);
+    box-shadow:0 18px 40px -24px rgba(0,0,0,.8);
+  }
+  .card.is-live:hover .enter .arw{transform:translate(4px,-4px)}
+  .card.locked-card{border-style:dashed; background:transparent; opacity:.9}
+  .card.locked-card h3{color:var(--ink-dim)}
+
+  /* ---------- passive skill: the method ---------- */
+  .method{
+    margin:clamp(20px,5vw,46px) 0 0; border:1px solid var(--line);
+    border-radius:16px; padding:clamp(26px,4vw,44px);
+    background:
+      linear-gradient(180deg,var(--panel-2),var(--panel));
+    position:relative; overflow:hidden;
+  }
+  .method::before{content:""; position:absolute; inset:0;
+    background:radial-gradient(600px 300px at 88% -30%,var(--gold-glow),transparent 60%); pointer-events:none}
+  .method .sec-label{color:var(--gold)}
+  .method h2{
+    font-family:"Bricolage Grotesque",sans-serif; font-weight:800; letter-spacing:-.02em;
+    font-size:clamp(1.7rem,4vw,2.5rem); line-height:1.02; margin:10px 0 18px; text-wrap:balance; max-width:20ch;
+  }
+  .method p{max-width:62ch; color:var(--ink-dim); font-size:clamp(1rem,2vw,1.12rem); margin:0}
+  .method p b{color:var(--ink); font-weight:600}
+  .proof{display:flex; flex-wrap:wrap; gap:10px; margin:24px 0 0}
+  .chip{
+    font-family:"JetBrains Mono",monospace; font-size:.72rem; letter-spacing:.02em;
+    color:var(--ink-dim); background:var(--bg-2); border:1px solid var(--line);
+    border-radius:8px; padding:9px 13px; display:inline-flex; gap:9px; align-items:center;
+  }
+  .chip::before{content:"✓"; color:var(--mint); font-weight:700}
+
+  /* ---------- origin ---------- */
+  .origin{margin:clamp(34px,6vw,60px) 0 0; display:grid; grid-template-columns:1.15fr 1fr; gap:clamp(20px,4vw,44px); align-items:center}
+  .origin .sec-label{color:var(--gold)}
+  .origin h2{
+    font-family:"Bricolage Grotesque",sans-serif; font-weight:700; letter-spacing:-.02em;
+    font-size:clamp(1.8rem,4.4vw,2.9rem); line-height:1.02; margin:10px 0 20px; text-wrap:balance;
+  }
+  .origin p{color:var(--ink-dim); font-size:1.04rem; max-width:52ch; margin:0 0 14px}
+  .origin p:last-child{margin-bottom:0}
+  .origin p b{color:var(--ink); font-weight:600}
+  .crest{
+    aspect-ratio:1; border:1px solid var(--line); border-radius:20px; position:relative;
+    background:radial-gradient(circle at 50% 40%, rgba(242,169,59,.16), transparent 62%), var(--panel);
+    display:flex; align-items:center; justify-content:center; overflow:hidden; min-height:220px;
+  }
+  .crest .glyph{font-family:"Bricolage Grotesque",sans-serif; font-weight:800;
+    font-size:clamp(4rem,14vw,8rem); letter-spacing:-.04em;
+    background:linear-gradient(180deg,var(--gold-soft),#B9813A);
+    -webkit-background-clip:text; background-clip:text; color:transparent}
+  .crest .ring{position:absolute; inset:14%; border:1px solid var(--line-strong); border-radius:50%; opacity:.5}
+  .crest .ring.two{inset:26%; border-style:dashed; opacity:.35}
+  .crest .cap{position:absolute; bottom:16px; font-family:"JetBrains Mono",monospace;
+    font-size:.64rem; letter-spacing:.24em; text-transform:uppercase; color:var(--ink-faint)}
+
+  /* ---------- footer ---------- */
+  footer{margin:clamp(46px,7vw,80px) 0 0; border-top:1px solid var(--line); padding:30px 0 50px}
+  .foot-row{display:flex; flex-wrap:wrap; gap:18px 30px; align-items:baseline; justify-content:space-between}
+  .foot-links{display:flex; flex-wrap:wrap; gap:8px}
+  .footnote{font-family:"JetBrains Mono",monospace; font-size:.68rem; letter-spacing:.04em;
+    color:var(--ink-faint); max-width:56ch; margin:22px 0 0; line-height:1.7}
+  .footnote b{color:var(--ink-dim); font-weight:500}
+
+  /* ---------- motion ---------- */
+  @media (prefers-reduced-motion:no-preference){
+    .rise{opacity:0; transform:translateY(14px); animation:rise .7s cubic-bezier(.2,.7,.2,1) forwards}
+    .hero .eyebrow{animation-delay:.02s}
+    .hero h1{animation-delay:.08s}
+    .class-line{animation-delay:.16s}
+    .thesis{animation-delay:.22s}
+    .howto{animation-delay:.30s}
+    .dot.wip{animation:pulse 2.4s ease-in-out infinite}
+  }
+  @keyframes rise{to{opacity:1; transform:none}}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 5px var(--gold-glow),0 0 18px var(--gold-glow)}
+    50%{box-shadow:0 0 0 9px rgba(242,169,59,.06),0 0 30px rgba(242,169,59,.5)}}
+
+  :focus-visible{outline:2px solid var(--gold); outline-offset:3px; border-radius:4px}
+
+  /* ---------- responsive: rail to the left, single column ---------- */
+  @media (max-width:760px){
+    .map::before{left:22px; bottom:70px}
+    .level{grid-template-columns:44px 1fr; column-gap:0}
+    .node{grid-column:1; justify-content:flex-start; padding-left:12px}
+    .level:nth-child(odd) .card,.level:nth-child(even) .card{grid-column:2; justify-self:stretch; max-width:none; margin-left:14px}
+    .level:nth-child(odd) .card::after,.level:nth-child(even) .card::after{left:-26px; right:auto; width:22px}
+    .origin{grid-template-columns:1fr}
+    .crest{order:-1; max-width:280px}
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="topbar">
+    <div class="mark">RICHARD <b>BRETTON</b></div>
+    <nav class="toplinks" aria-label="Contact and documents">
+      <a class="toplink" href="mailto:rbretton0807@gmail.com">Contact</a>
+      <a class="toplink" href="https://www.linkedin.com/in/richard-bretton/" target="_blank" rel="noopener">LinkedIn ↗</a>
+      <a class="toplink" href="resume.pdf" download>Résumé ↓</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <svg class="fracture" viewBox="0 0 1000 600" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+      <defs>
+        <linearGradient id="kintsugi" x1="1" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#F6C877"/>
+          <stop offset=".55" stop-color="#F2A93B"/>
+          <stop offset="1" stop-color="#B9813A"/>
+        </linearGradient>
+      </defs>
+      <path d="M866 -20 C 828 64, 852 112, 806 168 C 772 210, 748 250, 762 306 C 774 360, 726 396, 700 452"/>
+      <path d="M806 168 C 742 158, 690 186, 640 216 C 596 244, 556 250, 520 300"/>
+      <path d="M902 36 C 884 118, 936 168, 908 250 C 890 306, 934 344, 900 404"/>
+      <path d="M828 66 C 764 74, 704 60, 650 96 C 612 122, 596 150, 604 196"/>
+      <path d="M762 306 C 706 326, 664 306, 604 336 C 548 364, 512 372, 470 430"/>
+      <path d="M700 452 C 668 490, 628 506, 566 560"/>
+      <circle cx="806" cy="168" r="3.4"/>
+      <circle cx="762" cy="306" r="3.8"/>
+      <circle cx="700" cy="452" r="3.2"/>
+      <circle cx="640" cy="216" r="2.6"/>
+    </svg>
+    <div class="hero-inner">
+      <p class="eyebrow rise">Portfolio // Select a level</p>
+      <h1 class="rise"><span>Richard</span><span>Bretton</span></h1>
+      <p class="class-line rise">Technical Product Owner · Product Manager</p>
+      <p class="thesis rise">I conceive and build real products — with the <em>acquired taste to catch assumptions dressed up as fact</em>. Product judgment is the moat; the tooling is just throughput.</p>
+      <p class="howto rise">Every level below is a real, shipped product. Pick your level and dive in.</p>
+    </div>
+  </section>
+
+  <section aria-label="Projects">
+    <p class="sec-label">The Campaign · shipped &amp; in progress</p>
+
+    <div class="map">
+
+      <!-- LEVEL 01 -->
+      <article class="level">
+        <div class="node"><span class="dot live" aria-hidden="true"></span></div>
+        <div class="card is-live">
+          <div class="card-head">
+            <span class="lvl">Lvl 01</span>
+            <span class="status live">Live</span>
+          </div>
+          <p class="world">League of Legends</p>
+          <h3>The LoL Meta Market</h3>
+          <p>The 2025 pro meta priced like a stock market — adoption vs. performance, buy / sell / hold calls, and whether it's the champion or the pilot. Built on <b>2,198 real pro games</b>, every number hand-reconciled.</p>
+          <a class="enter" href="https://claude.ai/code/artifact/f514a312-4f8c-4693-b23c-e13602a903d1" target="_blank" rel="noopener">Enter level <span class="arw">↗</span></a>
+        </div>
+      </article>
+
+      <!-- LEVEL 02 -->
+      <article class="level">
+        <div class="node"><span class="dot live" aria-hidden="true"></span></div>
+        <div class="card is-live">
+          <div class="card-head">
+            <span class="lvl">Lvl 02</span>
+            <span class="status live">Live</span>
+          </div>
+          <p class="world">Elden Ring</p>
+          <h3>Build Optimizer</h3>
+          <p>Pick a boss, get the build that actually kills it fastest — damage types, status procs, hits-to-kill. It found that <b>Malenia resists the Scarlet Rot she inflicts</b>. Deployed, live, and it catches its own lies.</p>
+          <a class="enter" href="https://elden-ring-build-optimizer.streamlit.app" target="_blank" rel="noopener">Enter level <span class="arw">↗</span></a>
+        </div>
+      </article>
+
+      <!-- LEVEL 03 -->
+      <article class="level">
+        <div class="node"><span class="dot wip" aria-hidden="true"></span></div>
+        <div class="card">
+          <div class="card-head">
+            <span class="lvl">Lvl 03</span>
+            <span class="status wip">In progress</span>
+          </div>
+          <p class="world">Original IP · Action-RPG</p>
+          <h3>Eclipse</h3>
+          <p>A solo-built action-RPG under real product discipline — shipped <b>milestone by milestone against definition-of-done gates</b>, on an AI-augmented pipeline I architected and verify by hand. The reason the studio exists.</p>
+          <span class="enter disabled">Current campaign · devlog soon</span>
+        </div>
+      </article>
+
+      <!-- LOCKED -->
+      <article class="level">
+        <div class="node"><span class="dot locked" aria-hidden="true"></span></div>
+        <div class="card locked-card">
+          <div class="card-head">
+            <span class="lvl">Lvl ??</span>
+            <span class="status locked">Locked</span>
+          </div>
+          <p class="world" style="color:var(--slate)">? ? ?</p>
+          <h3>The Next Level</h3>
+          <p>Pick a real product question → build &amp; verify → ship it right here. The loop doesn't stop. Check back soon!</p>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- PASSIVE SKILL -->
+  <section class="method">
+    <p class="sec-label">Passive skill</p>
+    <h2>How I direct — and verify — AI</h2>
+    <p>AI vs. human was never the real question. What matters is whether someone with <b>real context is on the hook for what ships</b>. Turn AI loose and it hands you something that <em>sounds right</em> — confident, polished, and generic. It doesn't know your players, your business, or what "good" means here. That part's mine: the judgment, the taste, the call on what's actually true. AI brings the throughput; I bring the reason to trust it — <b>and the spine to throw it out when it's wrong</b>.</p>
+    <div class="proof">
+      <span class="chip">Caught a query counting empty ban slots</span>
+      <span class="chip">Corrected specialist-by-frequency → by-skill</span>
+      <span class="chip">Rejected off-voice copy that wasn't mine</span>
+    </div>
+  </section>
+
+  <!-- ORIGIN -->
+  <section class="origin">
+    <div>
+      <p class="sec-label">Origin</p>
+      <h2>Gaming saved my life. Now I build with it.</h2>
+      <p>Almost twenty years ago I was about as broken as a person gets — no direction, no ground under me. Games gave me somewhere to stand, and eventually something to build.</p>
+      <p>This is what that turned into. <b>Now I build and ship real products</b> — in the medium that gave me a reason to. Every level here started as a question I actually cared about, and ended as something you can open.</p>
+    </div>
+    <div class="crest" aria-hidden="true">
+      <span class="ring"></span><span class="ring two"></span>
+      <span class="glyph">RB</span>
+      <span class="cap">Est. player · still building</span>
+    </div>
+  </section>
+
+  <footer>
+    <div class="foot-row">
+      <div class="mark">RICHARD <b>BRETTON</b> · TPO / TPM</div>
+      <nav class="foot-links" aria-label="Links">
+        <a class="toplink" href="mailto:rbretton0807@gmail.com">rbretton0807@gmail.com</a>
+        <a class="toplink" href="https://www.linkedin.com/in/richard-bretton/" target="_blank" rel="noopener">LinkedIn ↗</a>
+        <a class="toplink" href="resume.pdf" download>Résumé ↓</a>
+      </nav>
+    </div>
+    <p class="footnote"><b>Built with AI-augmented development — directed and verified, human in the loop.</b> The craft, the calls, and the accountability are mine. Every number in every level was re-derived by hand before it shipped.</p>
+  </footer>
+
+</div>
